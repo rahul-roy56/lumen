@@ -1,0 +1,12 @@
+{
+  "domain": "finance",
+  "display_name": "Finance & SEC Filings",
+  "icon": "💰",
+  "example_questions": [
+    "What was the total revenue for the most recent fiscal year?",
+    "Compare the gross margins across the uploaded earnings reports.",
+    "Are there any contradictions between the risk factors in the 10-K and the investor presentation?",
+    "Summarize the key financial highlights from all uploaded documents.",
+    "What are the main risk factors mentioned across these filings?"
+  ]
+}

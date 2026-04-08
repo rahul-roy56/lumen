@@ -1,0 +1,12 @@
+{
+  "domain": "healthcare",
+  "display_name": "Healthcare & Medical",
+  "icon": "🏥",
+  "example_questions": [
+    "What treatment protocols are recommended in these clinical guidelines?",
+    "Compare the efficacy outcomes across the uploaded clinical trial reports.",
+    "Are there any contradictions in dosage recommendations between these documents?",
+    "Summarize the key findings from all the medical literature provided.",
+    "What adverse effects are mentioned across these documents?"
+  ]
+}

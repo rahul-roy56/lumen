@@ -1,0 +1,12 @@
+{
+  "domain": "hr_tech",
+  "display_name": "HR & Talent",
+  "icon": "👥",
+  "example_questions": [
+    "What are the required qualifications for this role?",
+    "Compare the responsibilities across these job descriptions.",
+    "Are there any contradictions between the employee handbook and the offer letter?",
+    "Summarize the key skills and experience from the uploaded resumes.",
+    "What compensation and benefits are outlined in these documents?"
+  ]
+}

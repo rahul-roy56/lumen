@@ -1,0 +1,12 @@
+{
+  "domain": "legal",
+  "display_name": "Legal & Contracts",
+  "icon": "⚖️",
+  "example_questions": [
+    "What are the key obligations of each party in this contract?",
+    "Compare the termination clauses across these agreements.",
+    "Are there any contradictions between the NDA and the master service agreement?",
+    "Summarize the main liability and indemnification provisions.",
+    "What are the governing law and dispute resolution mechanisms?"
+  ]
+}
