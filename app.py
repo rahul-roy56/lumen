@@ -190,21 +190,10 @@ button[kind="header"],
     background:rgba(255,255,255,0.05)!important;
     border:1px solid rgba(255,255,255,0.1)!important;border-radius:8px!important}
 
-/* ── File uploader — FULL FIX ── */
-[data-testid="stFileUploader"]>label{display:none!important}
-[data-testid="stFileUploader"]>div{padding-top:0!important}
+/* ── File uploader — clean ── */
 [data-testid="stSidebar"] [data-testid="stFileUploader"] section{
     border:1px dashed rgba(102,126,234,0.3)!important;border-radius:10px!important;
     background:rgba(102,126,234,0.04)!important;padding:0.7rem!important}
-[data-testid="stSidebar"] [data-testid="stFileUploader"] section>button{
-    width:100%!important;background:rgba(102,126,234,0.12)!important;
-    border:1px solid rgba(102,126,234,0.25)!important;border-radius:6px!important;
-    color:#a0a0ff!important;font-size:0.75rem!important;font-weight:500!important;
-    padding:0.35rem 0.8rem!important}
-[data-testid="stSidebar"] [data-testid="stFileUploader"] section>span{
-    font-size:0.65rem!important;color:#6c6c8a!important}
-[data-testid="stSidebar"] [data-testid="stFileUploader"] section>div[data-testid="stMarkdownContainer"]{
-    display:none!important}
 
 /* ── Misc ── */
 .stProgress>div>div{background:linear-gradient(90deg,#667eea,#764ba2)!important;border-radius:4px!important}
@@ -263,7 +252,7 @@ def _sidebar():
 
         st.divider()
         st.markdown('<div class="sh">Documents</div>', unsafe_allow_html=True)
-        files = st.file_uploader("Upload", type=["pdf","txt","docx"], accept_multiple_files=True, key="file_uploader", label_visibility="collapsed")
+        files = st.file_uploader("Drop files here", type=["pdf","txt","docx"], accept_multiple_files=True, key="file_uploader")
         if files and st.button("⚡ Process Documents", use_container_width=True, type="primary"):
             _process(files)
 
