@@ -76,6 +76,14 @@ input, textarea, [contenteditable="true"],
     width: 290px !important;
     padding: 1rem 1.2rem !important;
 }
+/* ── Force sidebar visible (overrides cached collapsed state on Cloud) ── */
+[data-testid="stSidebar"][aria-expanded="false"] {
+    display: block !important;
+    width: 290px !important;
+    min-width: 290px !important;
+    transform: none !important;
+    margin-left: 0 !important;
+}
 [data-testid="stSidebar"] * {
     font-family: 'Nunito', sans-serif !important;
     color: #134e4a !important;
