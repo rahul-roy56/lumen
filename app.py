@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 THEME_CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded');
 
 /* ── Cursor ── */
 *, *::before, *::after { cursor: default !important }
@@ -79,25 +80,21 @@ input, textarea, [contenteditable="true"],
     font-family: 'Nunito', sans-serif !important;
     color: #134e4a !important;
 }
+/* Let collapse button keep its Material Symbols icon font */
+[data-testid="stSidebar"] button[kind="header"],
+[data-testid="stSidebar"] button[kind="header"] *,
+[data-testid="collapsedControl"],
+[data-testid="collapsedControl"] *,
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapseButton"] * {
+    font-family: 'Material Symbols Rounded', sans-serif !important;
+}
 [data-testid="stSidebar"] hr {
     border-color: rgba(16,185,129,0.12) !important;
     margin: 0.75rem 0 !important;
 }
 
-/* ── Hide collapse button (renders as "keyboard_double_arrow" text) ── */
-button[kind="header"],
-[data-testid="collapsedControl"],
-[data-testid="stSidebar"] button[kind="header"],
-[data-testid="stSidebarCollapseButton"],
-[data-testid="stSidebar"] > div > div > div > button:first-child,
-[data-testid="stSidebarContent"] > div:first-child > button {
-    display: none !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    position: absolute !important;
-}
+/* ── Sidebar collapse button — left as native Streamlit default for reliability ── */
 
 /* ── Animated gradient brand ── */
 .brand {
