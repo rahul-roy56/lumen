@@ -76,14 +76,6 @@ input, textarea, [contenteditable="true"],
     width: 290px !important;
     padding: 1rem 1.2rem !important;
 }
-/* ── Force sidebar visible (overrides cached collapsed state on Cloud) ── */
-[data-testid="stSidebar"][aria-expanded="false"] {
-    display: block !important;
-    width: 290px !important;
-    min-width: 290px !important;
-    transform: none !important;
-    margin-left: 0 !important;
-}
 [data-testid="stSidebar"] * {
     font-family: 'Nunito', sans-serif !important;
     color: #134e4a !important;
@@ -96,6 +88,12 @@ input, textarea, [contenteditable="true"],
 [data-testid="stSidebarCollapseButton"],
 [data-testid="stSidebarCollapseButton"] * {
     font-family: 'Material Symbols Rounded', sans-serif !important;
+}
+/* Let file uploader keep its native font to prevent text duplication */
+[data-testid="stFileUploader"] button,
+[data-testid="stFileUploader"] button * {
+    font-family: 'Nunito', sans-serif !important;
+    -webkit-text-fill-color: initial !important;
 }
 [data-testid="stSidebar"] hr {
     border-color: rgba(16,185,129,0.12) !important;
