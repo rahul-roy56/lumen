@@ -228,7 +228,7 @@ lumen/
 ## Author
 
 **Rahul Roy**
-- [LinkedIn](https://linkedin.com/in/your-profile)
+- [LinkedIn](https://www.linkedin.com/in/rahulroy0499/)
 
 ---
 
