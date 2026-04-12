@@ -1,13 +1,8 @@
 """
 Lumen — Intelligent Multi-Document Reasoning Assistant
 
-Production Streamlit frontend with:
-- LangGraph multi-agent pipeline (Router → Retrieval → Reasoning → Evaluator)
-- FAISS vector search with sentence-transformer embeddings
-- LLM-as-judge evaluation on 4 quality dimensions
-- Multi-model support (Gemini 2.5 Flash, Llama 3 70B via Groq)
-- MLflow experiment tracking (optional, graceful fallback)
-- Dark sidebar / light main area hybrid theme
+Glassmorphism UI with frosted mint theme, green/teal accents,
+animated gradient branding, and mobile-responsive layout.
 """
 
 from __future__ import annotations
@@ -35,15 +30,15 @@ logger = logging.getLogger(__name__)
 
 
 # ════════════════════════════════════════════════════════════
-# Theme & Styling
+# Theme
 # ════════════════════════════════════════════════════════════
 
 THEME_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap');
 
 /* ── Cursor ── */
-*,*::before,*::after { cursor: default !important }
+*, *::before, *::after { cursor: default !important }
 a, button, [role="button"], label, select, option,
 input[type="file"], .stButton > button,
 [data-testid="baseButton-secondary"],
@@ -51,18 +46,28 @@ input[type="file"], .stButton > button,
 input, textarea, [contenteditable="true"],
 [data-testid="stChatInput"] textarea { cursor: text !important }
 
-/* ── Main area ── */
+/* ── Background — frosted mint with subtle gradient mesh ── */
 .stApp {
-    background: linear-gradient(165deg, #F8F9FC 0%, #EEF0F7 40%, #E8EAF2 100%) !important;
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-    color: #1a1a2e !important;
+    background: #f0fdf4 !important;
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(16,185,129,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(6,182,212,0.07) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(20,184,166,0.06) 0%, transparent 50%) !important;
+    background-attachment: fixed !important;
+    font-family: 'Nunito', sans-serif !important;
+    color: #134e4a !important;
 }
 
-/* ── Sidebar ── */
+/* ── Glassmorphism mixin (reused everywhere) ── */
+/* glass: bg white/60, blur 16px, border white/30, subtle shadow */
+
+/* ── Sidebar — frosted glass panel ── */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #1a1a2e 0%, #16162a 50%, #111128 100%) !important;
-    border-right: none !important;
-    box-shadow: 4px 0 24px rgba(0,0,0,0.15) !important;
+    background: rgba(255,255,255,0.55) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-right: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow: 4px 0 30px rgba(0,0,0,0.04) !important;
     min-width: 290px !important;
     width: 290px !important;
 }
@@ -71,200 +76,335 @@ input, textarea, [contenteditable="true"],
     padding: 1rem 1.2rem !important;
 }
 [data-testid="stSidebar"] * {
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-    color: #c8cad0 !important;
+    font-family: 'Nunito', sans-serif !important;
+    color: #134e4a !important;
 }
 [data-testid="stSidebar"] hr {
-    border-color: rgba(255,255,255,0.06) !important;
-    margin: 0.8rem 0 !important;
+    border-color: rgba(16,185,129,0.12) !important;
+    margin: 0.75rem 0 !important;
 }
 
-/* ── Hide sidebar collapse button (renders as "keyboard_double_arrow" text) ── */
+/* ── Hide collapse button (renders as "keyboard_double_arrow" text) ── */
 button[kind="header"],
 [data-testid="collapsedControl"],
-[data-testid="stSidebar"] button[kind="header"] {
+[data-testid="stSidebar"] button[kind="header"],
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebar"] > div > div > div > button:first-child,
+[data-testid="stSidebarContent"] > div:first-child > button {
     display: none !important;
     visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
 }
 
-/* ── Sidebar brand ── */
-.brand { padding: 0.6rem 0; text-align: center }
-.brand .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; color: #fff !important }
-.brand .logo b {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+/* ── Animated gradient brand ── */
+.brand {
+    padding: 0.8rem 0 0.5rem 0;
+    text-align: center;
+}
+.brand .logo {
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 25%, #14b8a6 50%, #059669 75%, #10b981 100%);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: brand-flow 4s ease infinite;
+}
+@keyframes brand-flow {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
 }
 .brand .tag {
-    font-size: 0.6rem; color: #6c6c8a !important; margin-top: 0.2rem;
-    letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600;
+    font-size: 0.6rem;
+    color: #6b9f97 !important;
+    margin-top: 0.15rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
 }
 
 /* ── Section headings ── */
 .sh {
-    font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.14em; color: #6c6c8a !important;
-    margin: 0.8rem 0 0.4rem 0; display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #6b9f97 !important;
+    margin: 0.7rem 0 0.35rem 0;
 }
-.sh::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06) }
 
-/* ── Document cards ── */
+/* ── Document cards — glass ── */
 .dc {
-    display: flex; align-items: center; gap: 0.5rem;
-    padding: 0.45rem 0.6rem; border-radius: 8px;
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.6);
     margin-bottom: 0.3rem;
+    transition: all 0.2s ease;
 }
-.dc:hover { background: rgba(102,126,234,0.08); border-color: rgba(102,126,234,0.2) }
-.dc .i { font-size: 0.9rem }
+.dc:hover {
+    background: rgba(16,185,129,0.08);
+    border-color: rgba(16,185,129,0.25);
+    transform: translateX(2px);
+}
+.dc .i { font-size: 0.95rem }
 .dc .n {
-    flex: 1; font-size: 0.72rem; font-weight: 500; color: #e0e0e8 !important;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1;
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: #134e4a !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .dc .b {
-    font-size: 0.58rem; font-family: 'IBM Plex Mono', monospace; color: #667eea !important;
-    background: rgba(102,126,234,0.1); padding: 0.1rem 0.35rem; border-radius: 4px;
+    font-size: 0.6rem;
+    font-family: 'Fira Code', monospace;
+    color: #059669 !important;
+    background: rgba(16,185,129,0.1);
+    padding: 0.12rem 0.4rem;
+    border-radius: 6px;
+    font-weight: 500;
 }
 
-/* ── Metrics grid ── */
+/* ── Metrics grid — glass cards ── */
 .mg { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem }
 .mc {
-    padding: 0.5rem 0.3rem; border-radius: 8px;
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    padding: 0.55rem 0.3rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.5);
     text-align: center;
 }
-.mc .v { font-size: 1.1rem; font-weight: 700; font-family: 'IBM Plex Mono', monospace }
+.mc .v {
+    font-size: 1.1rem;
+    font-weight: 800;
+    font-family: 'Fira Code', monospace;
+}
 .mc .l {
-    font-size: 0.5rem; color: #6c6c8a !important; text-transform: uppercase;
-    letter-spacing: 0.08em; margin-top: 0.08rem; font-weight: 600;
+    font-size: 0.5rem;
+    color: #6b9f97 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.08rem;
+    font-weight: 700;
 }
 
 /* ── Main header ── */
 .mh { padding: 1.2rem 0 0.5rem 0 }
 .mh h1 {
-    font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 800 !important;
-    font-size: 2rem !important; color: #1a1a2e !important; margin: 0 !important;
-    line-height: 1.15 !important; letter-spacing: -0.03em;
+    font-family: 'Nunito', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 2.2rem !important;
+    margin: 0 !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 40%, #14b8a6 70%, #059669 100%);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: brand-flow 4s ease infinite;
 }
-.mh h1 em {
-    font-style: normal;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+.mh .s {
+    font-size: 0.88rem;
+    color: #6b9f97;
+    margin-top: 0.2rem;
+    font-weight: 500;
 }
-.mh .s { font-size: 0.85rem; color: #7a7a96; margin-top: 0.2rem }
 
-/* ── Welcome card ── */
+/* ── Welcome card — prominent glass ── */
 .wc {
-    padding: 2.5rem 2rem; border-radius: 16px; background: #fff;
-    border: 1px solid #e2e4ec;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(102,126,234,0.06);
-    text-align: center; margin: 1.5rem 0; position: relative; overflow: hidden;
+    padding: 2.8rem 2rem;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.04), 0 1px 3px rgba(16,185,129,0.08);
+    text-align: center;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
 }
 .wc::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
-    background-size: 200% auto; animation: shimmer 3s ease infinite;
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #10b981, #06b6d4, #14b8a6, #10b981);
+    background-size: 300% auto;
+    animation: shimmer 4s ease infinite;
 }
-@keyframes shimmer { 0%{background-position:0% center} 100%{background-position:200% center} }
-.wc h2 { font-weight: 700 !important; font-size: 1.2rem !important; color: #1a1a2e !important; margin: 0 0 0.3rem 0 !important }
-.wc p { color: #7a7a96; font-size: 0.88rem; margin: 0 }
+@keyframes shimmer { 0%{background-position:0% center} 100%{background-position:300% center} }
+.wc h2 {
+    font-weight: 800 !important;
+    font-size: 1.3rem !important;
+    color: #134e4a !important;
+    margin: 0 0 0.35rem 0 !important;
+}
+.wc p { color: #6b9f97; font-size: 0.9rem; margin: 0 }
 
-/* ── Chat messages ── */
+/* ── Chat messages — glass bubbles ── */
 [data-testid="stChatMessage"] {
-    background: #fff !important; border: 1px solid #e8eaf0 !important;
-    border-radius: 12px !important; box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
-    margin-bottom: 0.75rem !important; padding: 1rem !important;
+    background: rgba(255,255,255,0.5) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03) !important;
+    margin-bottom: 0.75rem !important;
+    padding: 1rem !important;
 }
-[data-testid="stChatMessage"] * { color: #1a1a2e !important }
-[data-testid="stChatMessage"] .stCaption p { color: #7a7a96 !important }
+[data-testid="stChatMessage"] * { color: #134e4a !important }
+[data-testid="stChatMessage"] .stCaption p { color: #6b9f97 !important }
 
-/* ── Buttons ── */
+/* ── Primary button — teal gradient ── */
 .stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #667eea, #764ba2) !important;
-    border: none !important; border-radius: 8px !important; color: #fff !important;
-    font-weight: 600 !important; font-size: 0.82rem !important;
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    font-size: 0.82rem !important;
     padding: 0.5rem 1rem !important;
-    box-shadow: 0 2px 8px rgba(102,126,234,0.3) !important;
-    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 12px rgba(16,185,129,0.25) !important;
+    transition: all 0.25s ease !important;
 }
 .stButton > button[kind="primary"]:hover {
-    box-shadow: 0 4px 16px rgba(102,126,234,0.45) !important;
-    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 24px rgba(16,185,129,0.35) !important;
+    transform: translateY(-2px) !important;
 }
+
+/* ── Secondary buttons — glass ── */
 .stButton > button:not([kind="primary"]) {
-    background: #fff !important; border: 1px solid #d8dae4 !important;
-    border-radius: 8px !important; color: #1a1a2e !important;
-    font-weight: 500 !important; font-size: 0.8rem !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
-    transition: all 0.15s ease !important;
+    background: rgba(255,255,255,0.5) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(16,185,129,0.15) !important;
+    border-radius: 10px !important;
+    color: #134e4a !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    transition: all 0.2s ease !important;
 }
 .stButton > button:not([kind="primary"]):hover {
-    border-color: #667eea !important; color: #667eea !important;
-    box-shadow: 0 2px 8px rgba(102,126,234,0.12) !important;
+    border-color: #10b981 !important;
+    color: #059669 !important;
+    box-shadow: 0 2px 12px rgba(16,185,129,0.12) !important;
+    transform: translateY(-1px) !important;
 }
 
-/* ── Sidebar button overrides ── */
-[data-testid="stSidebar"] .stButton > button[kind="primary"] { color: #fff !important }
-[data-testid="stSidebar"] .stButton > button:not([kind="primary"]) {
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important; color: #c8cad0 !important;
-}
-[data-testid="stSidebar"] .stButton > button:not([kind="primary"]):hover {
-    background: rgba(102,126,234,0.1) !important;
-    border-color: rgba(102,126,234,0.3) !important; color: #667eea !important;
-}
-
-/* ── Chat input ── */
-[data-testid="stChatInput"] {
-    background: #fff !important; border-radius: 12px !important;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+/* ── Chat input — single clean border ── */
+[data-testid="stChatInput"],
+[data-testid="stChatInput"] > div {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 14px !important;
+    box-shadow: none !important;
+    padding: 0 !important;
 }
 [data-testid="stChatInput"] textarea {
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-    border: 1px solid #e2e4ec !important; border-radius: 12px !important;
-    color: #1a1a2e !important; background: #fff !important;
+    font-family: 'Nunito', sans-serif !important;
+    border: 1.5px solid rgba(16,185,129,0.2) !important;
+    border-radius: 14px !important;
+    color: #134e4a !important;
+    background: rgba(255,255,255,0.55) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03) !important;
 }
 [data-testid="stChatInput"] textarea:focus {
-    border-color: #667eea !important;
-    box-shadow: 0 0 0 3px rgba(102,126,234,0.12) !important;
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16,185,129,0.1) !important;
+    outline: none !important;
 }
 
-/* ── Sidebar selectbox ── */
+/* ── Sidebar selectbox — glass ── */
 [data-testid="stSidebar"] [data-testid="stSelectbox"] > div > div {
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 8px !important;
+    background: rgba(255,255,255,0.4) !important;
+    border: 1px solid rgba(16,185,129,0.12) !important;
+    border-radius: 10px !important;
 }
 
-/* ── File uploader ──
-   Streamlit renders an internal <label> with text AND a <button> with text,
-   causing "uploadUpload" double-text. The professional fix: use a minimal
-   1-char label with collapsed visibility so Streamlit's internal layout
-   engine still allocates space correctly, then style only the drop zone. */
-[data-testid="stSidebar"] [data-testid="stFileUploader"] {
-    margin-top: -0.3rem !important;
-}
+/* ── File uploader — glass ── */
 [data-testid="stSidebar"] [data-testid="stFileUploader"] section {
-    border: 1px dashed rgba(102,126,234,0.3) !important;
-    border-radius: 10px !important;
-    background: rgba(102,126,234,0.04) !important;
+    border: 1.5px dashed rgba(16,185,129,0.3) !important;
+    border-radius: 12px !important;
+    background: rgba(255,255,255,0.35) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
     padding: 0.7rem !important;
 }
 
-/* ── Progress bar ── */
+/* ── Progress bar — teal ── */
 .stProgress > div > div {
-    background: linear-gradient(90deg, #667eea, #764ba2) !important;
-    border-radius: 4px !important;
+    background: linear-gradient(90deg, #10b981, #06b6d4) !important;
+    border-radius: 6px !important;
 }
 
-/* ── Status widget ── */
+/* ── Status widget — glass ── */
 [data-testid="stStatusWidget"] {
-    background: #fff !important; border: 1px solid #e2e4ec !important;
-    border-radius: 10px !important; box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+    background: rgba(255,255,255,0.5) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: 12px !important;
 }
 
-/* ── Alert boxes ── */
-[data-testid="stAlert"] { border-radius: 8px !important; font-size: 0.82rem !important }
+/* ── Alert/info boxes ── */
+[data-testid="stAlert"] {
+    border-radius: 10px !important;
+    font-size: 0.82rem !important;
+    background: rgba(255,255,255,0.4) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
 
-/* ── Hide Streamlit branding ── */
+/* ── Warning box in sidebar ── */
+[data-testid="stSidebar"] [data-testid="stAlert"] {
+    background: rgba(251,191,36,0.08) !important;
+    border: 1px solid rgba(251,191,36,0.2) !important;
+}
+
+/* ── Mobile responsive ── */
+@media (max-width: 768px) {
+    [data-testid="stSidebar"] {
+        min-width: 260px !important;
+        width: 260px !important;
+    }
+    [data-testid="stSidebar"] > div:first-child {
+        width: 260px !important;
+        padding: 0.75rem 0.9rem !important;
+    }
+    .mh h1 { font-size: 1.6rem !important }
+    .mh .s { font-size: 0.78rem }
+    .wc { padding: 1.8rem 1.2rem }
+    .wc h2 { font-size: 1.1rem !important }
+    [data-testid="stChatMessage"] { padding: 0.75rem !important }
+}
+
+@media (max-width: 480px) {
+    .mh h1 { font-size: 1.3rem !important }
+    .brand .logo { font-size: 1.3rem }
+    .mg { grid-template-columns: 1fr 1fr; gap: 0.3rem }
+    .mc .v { font-size: 0.9rem }
+}
+
+/* ── Hide branding ── */
 #MainMenu { visibility: hidden }
 footer { visibility: hidden }
 header { visibility: hidden }
@@ -315,19 +455,18 @@ def _load_domain(domain: str) -> tuple[str, list[str]]:
 # ════════════════════════════════════════════════════════════
 
 def _render_sidebar() -> None:
-    """Render the dark sidebar with controls, document inventory, and metrics."""
+    """Render the frosted glass sidebar."""
     with st.sidebar:
-        # Brand
         st.markdown(
             '<div class="brand">'
-            '<div class="logo">⚡ <b>Lumen</b></div>'
+            '<div class="logo">⚡ Lumen</div>'
             '<div class="tag">Document Intelligence</div>'
             '</div>',
             unsafe_allow_html=True,
         )
         st.divider()
 
-        # Domain selector
+        # Domain
         st.markdown('<div class="sh">Domain</div>', unsafe_allow_html=True)
         domain_options = ["None"] + AVAILABLE_DOMAINS
         domain_labels = {"None": "🌐 General"}
@@ -342,7 +481,7 @@ def _render_sidebar() -> None:
             key="selected_domain", label_visibility="collapsed",
         )
 
-        # Model selector
+        # Model
         st.markdown('<div class="sh">Model</div>', unsafe_allow_html=True)
         available_models = get_available_models()
         model_labels = {
@@ -359,16 +498,13 @@ def _render_sidebar() -> None:
 
         st.divider()
 
-        # File uploader — use a descriptive section header, then a minimal uploader.
-        # The label_visibility="collapsed" hides Streamlit's built-in label.
-        # The section header "DOCUMENTS" above serves as the visual label.
-        st.markdown('<div class="sh">Upload Documents</div>', unsafe_allow_html=True)
+        # File uploader
+        st.markdown('<div class="sh">Documents</div>', unsafe_allow_html=True)
         uploaded_files = st.file_uploader(
-            "upload_docs",
+            "Upload PDF, TXT, or DOCX",
             type=["pdf", "txt", "docx"],
             accept_multiple_files=True,
             key="file_uploader",
-            label_visibility="collapsed",
         )
 
         if uploaded_files:
@@ -393,15 +529,15 @@ def _render_sidebar() -> None:
 
         st.divider()
 
-        # Experiment metrics
+        # Metrics
         st.markdown('<div class="sh">Metrics</div>', unsafe_allow_html=True)
         summary = get_experiment_summary()
         st.markdown(
             f'<div class="mg">'
-            f'<div class="mc"><div class="v" style="color:#667eea">{summary["total_queries"]}</div><div class="l">Queries</div></div>'
-            f'<div class="mc"><div class="v" style="color:#10b981">{summary["avg_faithfulness"]}</div><div class="l">Faith.</div></div>'
-            f'<div class="mc"><div class="v" style="color:#764ba2">{summary["avg_latency_ms"]:.0f}<span style="font-size:0.5rem">ms</span></div><div class="l">Latency</div></div>'
-            f'<div class="mc"><div class="v" style="color:#f59e0b;font-size:0.65rem">{summary["best_model"]}</div><div class="l">Top Model</div></div>'
+            f'<div class="mc"><div class="v" style="color:#059669">{summary["total_queries"]}</div><div class="l">Queries</div></div>'
+            f'<div class="mc"><div class="v" style="color:#0891b2">{summary["avg_faithfulness"]}</div><div class="l">Faith.</div></div>'
+            f'<div class="mc"><div class="v" style="color:#0d9488">{summary["avg_latency_ms"]:.0f}<span style="font-size:0.5rem">ms</span></div><div class="l">Latency</div></div>'
+            f'<div class="mc"><div class="v" style="color:#059669;font-size:0.65rem">{summary["best_model"]}</div><div class="l">Top Model</div></div>'
             f'</div>',
             unsafe_allow_html=True,
         )
@@ -458,11 +594,9 @@ def _render_metadata(meta: dict) -> None:
     if not meta:
         return
 
-    # Source citations
     if meta.get("sources_display") and meta["sources_display"] != "No sources cited":
         st.info(f"📎 **Sources:** {meta['sources_display']}")
 
-    # Metadata row
     pills = []
     if meta.get("confidence") is not None:
         pills.append(f"🎯 **{meta['confidence']}**/100")
@@ -478,7 +612,6 @@ def _render_metadata(meta: dict) -> None:
         for i, text in enumerate(pills):
             cols[i].caption(text)
 
-    # Evaluation scorecard
     if meta.get("eval_scores") and isinstance(meta["eval_scores"], dict):
         st.caption("**Quality Scores**")
         eval_cols = st.columns(len(meta["eval_scores"]))
@@ -489,11 +622,11 @@ def _render_metadata(meta: dict) -> None:
 
 
 # ════════════════════════════════════════════════════════════
-# Chat Display
+# Chat
 # ════════════════════════════════════════════════════════════
 
 def _render_chat() -> None:
-    """Render the full conversation history."""
+    """Render conversation history."""
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"], avatar="user" if msg["role"] == "user" else "🔆"):
             st.markdown(msg["content"])
@@ -502,11 +635,11 @@ def _render_chat() -> None:
 
 
 # ════════════════════════════════════════════════════════════
-# Welcome Screen
+# Welcome
 # ════════════════════════════════════════════════════════════
 
 def _render_welcome() -> None:
-    """Show the welcome card and example question buttons."""
+    """Show welcome card and example questions."""
     st.markdown(
         '<div class="wc">'
         '<h2>Upload documents to get started</h2>'
@@ -540,7 +673,7 @@ def _render_welcome() -> None:
 # ════════════════════════════════════════════════════════════
 
 def _handle_query(query: str) -> None:
-    """Add user message and trigger pipeline execution on next rerun."""
+    """Add user message and trigger pipeline."""
     st.session_state.messages.append({"role": "user", "content": query})
 
     if not st.session_state.vector_store.is_populated:
@@ -565,7 +698,7 @@ def _handle_query(query: str) -> None:
 
 
 def _process_pending_query() -> None:
-    """Detect and process a pending user query with streaming status updates."""
+    """Process a pending user query with streaming status."""
     messages = st.session_state.messages
     if not messages or messages[-1]["role"] != "user":
         return
@@ -579,7 +712,7 @@ def _process_pending_query() -> None:
     domain = st.session_state.selected_domain
     domain_prompt = _load_domain(domain)[0] if domain and domain != "None" else ""
 
-    # Render existing history
+    # Render history
     for msg in messages:
         with st.chat_message(msg["role"], avatar="user" if msg["role"] == "user" else "🔆"):
             st.markdown(msg["content"])
@@ -654,10 +787,9 @@ def main() -> None:
     _init_session_state()
     _render_sidebar()
 
-    # Header
     st.markdown(
         '<div class="mh">'
-        '<h1>⚡ <em>Lumen</em></h1>'
+        '<h1>⚡ Lumen</h1>'
         '<div class="s">Multi-Document Reasoning Assistant — powered by LangGraph</div>'
         '</div>',
         unsafe_allow_html=True,
