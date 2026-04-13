@@ -1,0 +1,15 @@
+streamlit
+langchain
+langchain-google-genai
+langchain-groq
+langgraph
+faiss-cpu
+sentence-transformers
+pymupdf
+python-docx
+pytesseract
+Pillow
+mlflow
+python-dotenv
+pytest
+matplotlib
