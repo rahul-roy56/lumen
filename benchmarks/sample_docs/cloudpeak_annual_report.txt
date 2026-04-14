@@ -1,0 +1,33 @@
+CloudPeak Systems — Annual Report 2024
+
+FINANCIAL SUMMARY
+
+CloudPeak Systems reported total revenue of $3.8 billion for fiscal year 2024, a 19% increase from $3.2 billion in fiscal year 2023. Net income was $494 million, up from $384 million in the prior year. Operating margin was 15.8%, compared to 14.5% in 2023.
+
+Cloud infrastructure services generated $2.3 billion in revenue (61% of total), growing 25% year-over-year. Data analytics platforms contributed $1.0 billion (26% of total), growing 14%. Consulting services generated $500 million (13% of total), declining 2% as the company shifted toward product-led growth.
+
+Gross margin was 58.7% in 2024, compared to 57.2% in 2023. Research and development spending was $684 million (18% of revenue), higher than the industry average, reflecting the company's focus on next-generation AI capabilities.
+
+WORKFORCE AND GLOBAL PRESENCE
+
+CloudPeak employed 22,100 people as of December 31, 2024, compared to 20,800 in 2023. The company operates in 35 countries with dual headquarters in Seattle, Washington and London, United Kingdom. Employee retention rate was 87%, which management acknowledged is below their 90% target.
+
+The company invested $1.5 billion in capital expenditure during 2024, with $1.0 billion directed toward expanding cloud data center capacity. CloudPeak operates 22 data centers globally and plans to add 4 more in 2025.
+
+PRODUCT DEVELOPMENTS
+
+CloudPeak launched PeakAI Studio, a no-code machine learning platform, in Q1 2024. The platform attracted 180,000 users by year-end but monetization has been slower than expected, with only $28 million in annualized revenue. Management expects significant revenue acceleration in 2025 as enterprise adoption grows.
+
+The company also released PeakDB, a cloud-native database competing directly with TechNova's NovaDB. PeakDB emphasizes real-time analytics capabilities and claims 30% better query performance for analytical workloads.
+
+RISK FACTORS
+
+CloudPeak faces significant competition from TechNova Inc. and other major cloud providers. Customer concentration is a concern — the top 5 customers represent 22% of total revenue. The company has $2.1 billion in long-term debt, with $400 million maturing in 2026.
+
+Regulatory risks include the EU AI Act compliance requirements, estimated to cost $45 million in implementation. The company also faces a class-action lawsuit related to a 2023 data breach affecting 2.3 million customer records. A $150 million reserve has been established for potential settlement costs.
+
+GUIDANCE FOR 2025
+
+CloudPeak projects revenue of $4.4–4.6 billion for fiscal year 2025, representing 16–21% growth. The company expects cloud infrastructure revenue to grow 22–26%. Planned capital expenditure is $1.8 billion, with AI infrastructure accounting for 60% of the total. The company aims to hire 2,500 new employees, with a focus on AI researchers and cloud architects.
+
+No dividend was declared. The board is evaluating initiating a dividend program in late 2025, pending debt reduction milestones.

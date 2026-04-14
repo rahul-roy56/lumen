@@ -1,0 +1,33 @@
+TechNova Inc. — Annual Report 2024
+
+FINANCIAL HIGHLIGHTS
+
+TechNova Inc. reported total revenue of $4.2 billion for fiscal year 2024, representing a 23% increase from $3.4 billion in fiscal year 2023. Net income reached $680 million, up from $520 million in the prior year, a 31% improvement. Operating margin expanded to 19.2% from 17.1% in 2023.
+
+The company's cloud services division was the primary growth driver, generating $2.1 billion in revenue (50% of total), up 34% year-over-year. Enterprise software contributed $1.4 billion (33% of total), growing 15%. The professional services segment generated $700 million (17% of total), growing 8%.
+
+Gross margin improved to 64.3% from 62.1% in 2023, driven by economies of scale in cloud infrastructure and a favorable shift toward higher-margin software subscriptions. Research and development expenses totaled $588 million (14% of revenue), up from $476 million in 2023.
+
+EMPLOYEE AND OPERATIONS
+
+As of December 31, 2024, TechNova employed 18,500 people globally, up from 15,200 in 2023. The company operates in 28 countries with headquarters in Austin, Texas. Employee retention rate was 91%, above the industry average of 85%.
+
+The company opened three new data centers in 2024 — in Frankfurt, Germany; Mumbai, India; and São Paulo, Brazil — bringing total data center count to 14 worldwide. Capital expenditure for 2024 was $1.1 billion, primarily for data center expansion and AI infrastructure.
+
+PRODUCT LAUNCHES
+
+TechNova launched NovaCopilot, an AI-powered coding assistant, in Q2 2024. Within six months, NovaCopilot acquired 340,000 paying users and generated $85 million in annualized recurring revenue. The company also released NovaDB 3.0, a distributed database with built-in vector search capabilities.
+
+In Q4 2024, TechNova announced NovaCloud Edge, an edge computing platform designed for IoT applications. Early customer trials showed 40% latency reduction compared to centralized cloud solutions.
+
+RISK FACTORS
+
+Key risks include increasing competition in the cloud services market from major providers, potential regulatory changes affecting data privacy and AI governance, dependence on key enterprise customers (top 10 customers represent 28% of revenue), and foreign currency exposure with 42% of revenue generated outside the United States.
+
+The company faces ongoing litigation related to patent infringement claims from two competitors. Management believes these claims are without merit and intends to vigorously defend against them. Legal expenses related to these matters totaled $12 million in 2024.
+
+OUTLOOK FOR 2025
+
+Management projects revenue of $5.0–5.2 billion for fiscal year 2025, representing 19–24% growth. Cloud services revenue is expected to grow 28–32%. The company plans to invest $1.4 billion in capital expenditure, with $900 million allocated to AI infrastructure. TechNova expects to hire approximately 3,000 new employees in 2025, primarily in engineering and sales roles.
+
+The board of directors authorized a $500 million share repurchase program in January 2025. The company declared a quarterly dividend of $0.15 per share, a 15% increase from the prior quarter.

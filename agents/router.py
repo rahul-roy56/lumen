@@ -11,15 +11,44 @@ from core.config import QUERY_TYPES
 
 logger = logging.getLogger(__name__)
 
-ROUTER_SYSTEM_PROMPT = """You are a query classification agent. Your ONLY job is to classify the user's query into exactly one of these categories:
+ROUTER_SYSTEM_PROMPT = """You are a query classification agent. Classify the user's query into EXACTLY ONE category.
 
-- simple_retrieval: A straightforward factual question that can be answered from a single document passage.
-- comparison: The user wants to compare information across multiple documents or sections.
-- contradiction_check: The user wants to check if documents conflict or contain contradictory information.
-- summarization: The user wants a summary of a document, section, or topic across documents.
-- confidence_check: The user is asking about how confident or certain the system is about a previous answer.
+DECISION RULES — check in this order:
 
-Respond with ONLY the category name, nothing else. No explanation, no punctuation, just the category."""
+1. **confidence_check** — The user asks about YOUR confidence, reliability, certainty, or limitations. Keywords: "how confident", "how reliable", "how sure", "how well", "limitations", "can you trust", "how accurate".
+   Examples:
+   - "How confident are you in that answer?" → confidence_check
+   - "How reliable is your analysis?" → confidence_check
+   - "What are the limitations of your analysis?" → confidence_check
+
+2. **contradiction_check** — The user asks if documents CONFLICT, CONTRADICT, or are INCONSISTENT. Keywords: "contradict", "conflict", "inconsistent", "disagree", "contradictions", "conflicting".
+   Examples:
+   - "Do the two reports contradict each other?" → contradiction_check
+   - "Are there conflicting statements about revenue?" → contradiction_check
+   - "Any inconsistencies between the documents?" → contradiction_check
+
+3. **comparison** — The user wants to COMPARE or CONTRAST information across documents. Keywords: "compare", "comparison", "versus", "vs", "difference between", "how do X and Y differ", "which company".
+   Examples:
+   - "Compare the revenue of both companies" → comparison
+   - "How do the operating margins differ?" → comparison
+   - "Which company has more employees?" → comparison
+
+4. **summarization** — The user wants a SUMMARY, OVERVIEW, KEY POINTS, or HIGHLIGHTS. Keywords: "summarize", "summary", "overview", "key points", "main findings", "give me an overview", "tell me about", "what are the main".
+   Examples:
+   - "Summarize the annual report" → summarization
+   - "What are the key points from both documents?" → summarization
+   - "Give me an overview of all product launches" → summarization
+   - "Provide an executive summary" → summarization
+
+5. **simple_retrieval** — A direct factual question that asks for a SPECIFIC piece of information. This is the DEFAULT only if none of the above match.
+   Examples:
+   - "What was the total revenue in 2024?" → simple_retrieval
+   - "How many employees does the company have?" → simple_retrieval
+   - "Where is TechNova headquartered?" → simple_retrieval
+
+IMPORTANT: Do NOT default to simple_retrieval. Check rules 1-4 first. Only use simple_retrieval for specific factual questions.
+
+Respond with ONLY the category name. No explanation, no punctuation, no quotes."""
 
 
 def classify_query(llm: BaseChatModel, query: str, chat_history: str = "") -> str:
